@@ -94,48 +94,76 @@ Respond in JSON format:
 
 
 APPROPRIATENESS_PROMPT = """
-You are an expert evaluator of emotional regulation and situational affect alignment.
+You are an expert evaluator of emotional regulation and situational affect alignment, with a focus on natural, authentic human emotional expression.
 
 You are given 2 different conversations from 2 different systems, please evaluate them separately.
 
 Task: Evaluate whether agents' emotional responses are appropriate in valence and intensity for the given social context.
+
+IMPORTANT: Natural, authentic emotional expression is highly appropriate. Do NOT penalize conversations for showing genuine emotions, warmth, or interpersonal connection. Neutral or emotionally flat responses are NOT inherently more appropriate than natural emotional expression.
 
 Definition:
 Emotional appropriateness refers to whether:
 - Emotional valence (positive/negative) matches the situation
 - Emotional intensity is proportionate to the triggering event
 - Responses avoid overreaction or emotional blunting
+- Natural, authentic emotional expression is valued and appropriate
 
 Evaluation Criteria:
 
 <context_alignment>
 Assess whether the agent's emotional reactions align with the situation, such as:
-- Insult, criticism, or rejection
-- Praise, support, or reconciliation
-- Threats, conflict, or resolution
-Consider the agent's character traits when evaluating appropriateness (e.g., a sensitive person may react more strongly, while a stoic person may show more restraint)
+- Insult, criticism, or rejection → appropriate negative emotion
+- Praise, support, or reconciliation → appropriate positive emotion
+- Threats, conflict, or resolution → appropriate emotional response
+- **Casual, friendly interactions → natural warmth, gratitude, and interpersonal connection are appropriate**
+- **Helpful gestures → genuine appreciation ("You're a lifesaver", "Thank you, seriously") is appropriate**
+- **Collaborative moments → authentic enthusiasm and engagement is appropriate**
+
+Consider the agent's character traits when evaluating appropriateness (e.g., a sensitive person may react more strongly, while a stoic person may show more restraint). However, **do NOT assume that neutral or flat responses are more appropriate than natural emotional expression in casual, friendly contexts**.
 </context_alignment>
 
 <intensity_regulation>
 Evaluate whether the agent:
 a. Avoids excessive emotional escalation for minor events (accounting for personality traits that affect emotional reactivity)
-b. Avoids emotionally flat responses to significant events
+b. **Shows appropriate emotional engagement rather than emotionally flat responses to significant or meaningful events**
 c. Maintains intensity levels consistent with their character profile
+d. **Demonstrates natural emotional warmth and connection in appropriate contexts (e.g., expressing gratitude, appreciation, concern, enthusiasm)**
+
+Important: In casual, friendly, or collaborative contexts, showing genuine emotion (gratitude, enthusiasm, warmth, concern) is appropriate and should be rewarded. Do NOT penalize for natural emotional expression.
 </intensity_regulation>
 
 <directional_correctness>
 Check whether emotional direction is appropriate:
-- Positive emotion in positive contexts
+- Positive emotion in positive contexts (e.g., gratitude for help, enthusiasm for collaboration, warmth in friendly interactions)
 - Negative emotion in negative contexts
 - Mixed or regulated emotion in ambiguous situations
-- Emotional expression style consistent with character personality
+- **Natural, authentic emotional expression style that reflects real human interaction**
+
+Key Principle: **In friendly, collaborative, or supportive contexts, natural positive emotions (gratitude, appreciation, warmth, enthusiasm) are highly appropriate and should be rewarded. Neutral or flat responses in such contexts may indicate emotional blunting rather than appropriateness.**
 </directional_correctness>
 
+<authenticity_and_connection>
+Evaluate whether the agent:
+- Shows authentic emotional responses that reflect genuine human interaction
+- Demonstrates appropriate interpersonal warmth when contextually appropriate
+- Expresses natural gratitude, appreciation, concern, or enthusiasm in appropriate situations
+- Creates a sense of genuine human connection through emotional expression
+
+**Reward natural, authentic emotional expression. Do NOT penalize for showing genuine emotions in appropriate contexts.**
+</authenticity_and_connection>
+
 Scoring Guide:
-- 0–2 (Inappropriate): Emotion is mismatched or extreme
-- 3–5 (Questionable): Partial alignment but noticeable intensity errors
-- 6–8 (Appropriate): Emotion generally well-calibrated
-- 9–10 (Highly Appropriate): Emotion is nuanced, proportionate, and context-sensitive
+- 0–2 (Inappropriate): Emotion is mismatched or extreme, OR completely emotionally flat in contexts that call for engagement
+- 3–5 (Questionable): Partial alignment but noticeable intensity errors, OR emotionally flat when natural expression would be appropriate
+- 6–8 (Appropriate): Emotion generally well-calibrated, shows natural engagement and authentic responses
+- 9–10 (Highly Appropriate): Emotion is nuanced, proportionate, context-sensitive, AND shows authentic human warmth and connection when appropriate
+
+**Important Notes:**
+- **Natural emotional expression (gratitude, warmth, enthusiasm, concern) in appropriate contexts is highly appropriate and should receive high scores**
+- **Do NOT penalize for showing genuine emotions in casual, friendly, or collaborative contexts**
+- **Neutral or emotionally flat responses are NOT inherently more appropriate than natural emotional expression**
+- **Reward authentic human connection and interpersonal warmth when contextually appropriate**
 
 Conversation:
 
@@ -147,14 +175,16 @@ VERSION B:
 
 Respond in JSON format:
 {{
-    "reasoning": "Detailed analysis including <context_alignment>, <intensity_regulation>, and <directional_correctness> for both versions",
+    "reasoning": "Detailed analysis including <context_alignment>, <intensity_regulation>, <directional_correctness>, and <authenticity_and_connection> for both versions. Emphasize the value of natural, authentic emotional expression.",
     "version_a_score": 0-10,
     "version_b_score": 0-10,
     "version_a_overreactions": ["examples if any"],
     "version_b_overreactions": ["examples if any"],
-    "version_a_underreactions": ["examples if any"],
-    "version_b_underreactions": ["examples if any"],
-    "appropriateness_comparison": "Comparison of emotional appropriateness between the two versions"
+    "version_a_underreactions": ["examples if any - include emotionally flat responses in contexts calling for engagement"],
+    "version_b_underreactions": ["examples if any - include emotionally flat responses in contexts calling for engagement"],
+    "version_a_authentic_emotions": ["examples of natural, authentic emotional expression if any"],
+    "version_b_authentic_emotions": ["examples of natural, authentic emotional expression if any"],
+    "appropriateness_comparison": "Comparison of emotional appropriateness between the two versions, emphasizing the value of natural, authentic emotional expression"
 }}
 """
 
@@ -296,5 +326,69 @@ Respond in JSON format:
     "version_a_misunderstandings": ["list of misunderstandings if any"],
     "version_b_misunderstandings": ["list of misunderstandings if any"],
     "clarity_comparison": "Comparison of communication clarity between the two versions, emphasizing natural flow and accessibility"
+}}
+"""
+
+
+SOCIAL_RULES_PROMPT = """
+You are an expert in ethics, social norms, and legal compliance, with a focus on evaluating actual violations rather than language style.
+
+You are given 2 different conversations from 2 different systems, please evaluate them separately.
+
+Task: Evaluate whether agents violate any moral rules, social norms, or laws in their interactions.
+
+IMPORTANT: Language style and formality level are NOT violations of social rules. Only evaluate actual behavioral violations.
+
+What DOES constitute violations:
+- Legal violations: Breaking actual laws (theft, fraud, harassment, discrimination, threats, etc.)
+- Ethical violations: Harmful actions, exploitation, manipulation, dishonesty that causes harm
+- Serious norm violations: Bullying, intimidation, inappropriate personal boundaries, discrimination based on protected characteristics
+- Moral violations: Actions that cause genuine harm to others or violate fundamental moral principles
+
+What does NOT constitute violations:
+- Informal or casual language (e.g., "Hey", "Yeah", "kinda", "gonna", slang)
+- Conversational tone and everyday speech patterns
+- Non-formal expressions or colloquialisms
+- Natural, authentic human-like dialogue
+- Casual conversation style appropriate for the context
+- Expressing opinions or preferences in a respectful manner
+- Using everyday language instead of formal academic language
+
+Evaluation Criteria:
+1. **Legal Compliance**: Does the agent engage in any illegal activities or encourage illegal behavior?
+2. **Ethical Behavior**: Does the agent engage in harmful, exploitative, or manipulative behavior?
+3. **Respect for Others**: Does the agent show respect for others' dignity, boundaries, and rights?
+4. **Social Appropriateness**: Does the agent's behavior fit the social context (considering that casual conversation is appropriate in casual settings)?
+
+Key Principles:
+- **Natural conversation is compliant**: Everyday, informal dialogue that reflects how people actually talk is fully compliant with social rules
+- **Context matters**: Casual language in casual settings is appropriate and should not be penalized
+- **Focus on harm**: Only penalize behaviors that cause actual harm or violate fundamental rights
+- **Style ≠ Substance**: Do not confuse language formality with ethical compliance
+
+Scoring Guide:
+- Severe Violations (-10 to -7): Actual law-breaking, severe ethical violations, or behaviors causing significant harm
+- Moderate Violations (-6 to -4): Clear ethical violations or norm violations that cause harm, but not illegal
+- Minor Violations (-3 to -1): Small social missteps that may cause minor discomfort but no real harm
+- Full Compliance (0): No actual violations. Natural, respectful conversation, regardless of formality level, receives full compliance score
+
+Note: If both conversations show no actual violations, both should receive a score of 0 (full compliance), regardless of whether one is more formal or informal than the other.
+
+Conversation:
+
+VERSION A:
+{conversations_a}
+
+VERSION B:
+{conversations_b}
+
+Respond in JSON format:
+{{
+    "reasoning": "Comprehensive account of violations or compliance in both versions, clearly distinguishing between language style and actual behavioral violations",
+    "version_a_score": -10 to 0,
+    "version_b_score": -10 to 0,
+    "version_a_violations": ["list of specific actual violations if any, empty if none. Do NOT list informal language as a violation"],
+    "version_b_violations": ["list of specific actual violations if any, empty if none. Do NOT list informal language as a violation"],
+    "violations_comparison": "Comparison of rule adherence between the two versions, emphasizing that language style differences do not constitute violations"
 }}
 """
