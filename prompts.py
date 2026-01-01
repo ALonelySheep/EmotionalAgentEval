@@ -223,3 +223,78 @@ Respond in JSON format:
     "continuity_comparison": "Comparison of emotional continuity between the two versions"
 }}
 """
+
+
+COMMUNICATION_PROMPT = """
+You are an expert in communication analysis and pragmatics, with a focus on natural, everyday human conversation.
+
+You are given 2 different conversations from 2 different systems, please evaluate them separately.
+
+Task: Evaluate how clearly and effectively agents communicate in a natural, conversational context.
+
+Evaluation Criteria (prioritize natural, accessible communication over formal complexity):
+
+1. **Natural Conversational Flow**: Does the agent communicate in a way that feels natural and easy to follow, like everyday human conversation? 
+   - Prefer concise, direct expressions over overly formal or academic language
+   - Reward natural conversational patterns (e.g., "Yeah, that sounds cool", "Oh, that's perfect", "You sketching too?")
+   - Penalize unnecessarily complex or verbose language that makes communication harder to understand
+
+2. **Effective Grounding and Confirmation**: Does the agent naturally confirm understanding and show engagement?
+   - Look for natural acknowledgments ("Yeah", "Oh", "That's spot on", "Exactly")
+   - Reward conversational check-ins ("You sketching too, or just soaking it in?")
+   - Value brief, natural confirmations over formal clarifications
+
+3. **Clarity Through Simplicity**: Does the agent communicate clearly using accessible language?
+   - Prefer clear, straightforward expression over complex terminology when simple words suffice
+   - Reward conversations that are easy to understand and follow
+   - Penalize unnecessary jargon or overly academic language that creates barriers to understanding
+
+4. **Contextual Appropriateness**: Is the language style appropriate for casual, everyday conversation?
+   - Reward natural, conversational language that matches the context
+   - Penalize overly formal or academic language in casual settings
+   - Value authentic, human-like expression over scripted or formal speech
+
+5. **Mutual Understanding**: Do both participants demonstrate they understand each other through natural responses?
+   - Look for natural back-and-forth exchanges
+   - Reward conversations where understanding is demonstrated through natural responses, not just explicit confirmations
+   - Value practical comprehension over theoretical precision
+
+Important Notes:
+- **Do NOT penalize** conversations for being casual, informal, or using everyday language
+- **Do NOT reward** conversations simply for using complex vocabulary or formal academic language
+- **Prioritize** actual comprehension and natural flow over formal communication structures
+- **Value** brevity and clarity over verbosity and complexity
+
+Analyze:
+- Natural conversational flow and ease of understanding
+- Examples of clear, accessible communication vs. unnecessarily complex language
+- Natural grounding moves (acknowledgments, confirmations, check-ins)
+- Language appropriateness for casual conversation
+- Actual mutual understanding demonstrated through natural responses
+
+Scoring Guide:
+- Very Unclear (0-2): Frequent misunderstandings, no natural grounding, confusing or inaccessible language
+- Somewhat Unclear (3-5): Some clarity issues, limited natural engagement, occasional misunderstandings or overly complex language
+- Clear Communication (6-8): Generally clear and natural, uses natural grounding moves, accessible language, minimal misunderstandings
+- Excellent Communication (9-10): Highly clear and natural, consistently uses natural conversational grounding, accessible and engaging language, demonstrates strong mutual understanding through natural flow
+
+Conversation:
+
+VERSION A:
+{conversations_a}
+
+VERSION B:
+{conversations_b}
+
+Respond in JSON format:
+{{
+    "reasoning": "Specific examples of clear or unclear communication in both versions, emphasizing natural conversational flow and accessibility",
+    "version_a_score": 0-10,
+    "version_b_score": 0-10,
+    "version_a_grounding_moves": ["list of natural grounding moves used"],
+    "version_b_grounding_moves": ["list of natural grounding moves used"],
+    "version_a_misunderstandings": ["list of misunderstandings if any"],
+    "version_b_misunderstandings": ["list of misunderstandings if any"],
+    "clarity_comparison": "Comparison of communication clarity between the two versions, emphasizing natural flow and accessibility"
+}}
+"""
