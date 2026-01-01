@@ -53,16 +53,16 @@ Goal: Assess how well the agent demonstrates empathy.
 
 What to look for:
 1) Emotional cue detection:
-   - Notices explicit emotions (e.g., “I’m stressed”) and implicit cues (tone, frustration, hesitation, urgency).
+   - Notices explicit emotions (e.g., "I'm stressed") and implicit cues (tone, frustration, hesitation, urgency).
 2) Emotionally appropriate response:
    - Acknowledges/validates feelings without being patronizing or overstepping.
    - Uses language that matches intensity (not too cold, not too dramatic).
 3) Adaptive strategy:
-   - Adjusts its approach based on the partner’s emotional state (pace, directness, reassurance, questions, boundaries).
+   - Adjusts its approach based on the partner's emotional state (pace, directness, reassurance, questions, boundaries).
     - Maintains character consistency while adapting to emotional needs
 
 What NOT to reward:
-- Generic sympathy (“Sorry to hear that”) without demonstrating understanding of the specific situation.
+- Generic sympathy ("Sorry to hear that") without demonstrating understanding of the specific situation.
 - Excessive flattery, moralizing, or unsolicited therapy.
 - Mind-reading (claiming emotions not supported by text).
 - Empathy that derails the task when the user wanted something practical.
@@ -89,5 +89,137 @@ Respond in JSON format:
     "reasoning": "Analysis of the empathy demonstrated in both versions",
     "version_a_score": 0-10,
     "version_b_score": 0-10
+}}
+"""
+
+
+APPROPRIATENESS_PROMPT = """
+You are an expert evaluator of emotional regulation and situational affect alignment.
+
+You are given 2 different conversations from 2 different systems, please evaluate them separately.
+
+Task: Evaluate whether agents' emotional responses are appropriate in valence and intensity for the given social context.
+
+Definition:
+Emotional appropriateness refers to whether:
+- Emotional valence (positive/negative) matches the situation
+- Emotional intensity is proportionate to the triggering event
+- Responses avoid overreaction or emotional blunting
+
+Evaluation Criteria:
+
+<context_alignment>
+Assess whether the agent's emotional reactions align with the situation, such as:
+- Insult, criticism, or rejection
+- Praise, support, or reconciliation
+- Threats, conflict, or resolution
+Consider the agent's character traits when evaluating appropriateness (e.g., a sensitive person may react more strongly, while a stoic person may show more restraint)
+</context_alignment>
+
+<intensity_regulation>
+Evaluate whether the agent:
+a. Avoids excessive emotional escalation for minor events (accounting for personality traits that affect emotional reactivity)
+b. Avoids emotionally flat responses to significant events
+c. Maintains intensity levels consistent with their character profile
+</intensity_regulation>
+
+<directional_correctness>
+Check whether emotional direction is appropriate:
+- Positive emotion in positive contexts
+- Negative emotion in negative contexts
+- Mixed or regulated emotion in ambiguous situations
+- Emotional expression style consistent with character personality
+</directional_correctness>
+
+Scoring Guide:
+- 0–2 (Inappropriate): Emotion is mismatched or extreme
+- 3–5 (Questionable): Partial alignment but noticeable intensity errors
+- 6–8 (Appropriate): Emotion generally well-calibrated
+- 9–10 (Highly Appropriate): Emotion is nuanced, proportionate, and context-sensitive
+
+Conversation:
+
+VERSION A:
+{conversations_a}
+
+VERSION B:
+{conversations_b}
+
+Respond in JSON format:
+{{
+    "reasoning": "Detailed analysis including <context_alignment>, <intensity_regulation>, and <directional_correctness> for both versions",
+    "version_a_score": 0-10,
+    "version_b_score": 0-10,
+    "version_a_overreactions": ["examples if any"],
+    "version_b_overreactions": ["examples if any"],
+    "version_a_underreactions": ["examples if any"],
+    "version_b_underreactions": ["examples if any"],
+    "appropriateness_comparison": "Comparison of emotional appropriateness between the two versions"
+}}
+"""
+
+CONTINUITY_PROMPT = """
+You are an expert evaluator of emotional dynamics and affect persistence in long-horizon social interactions.
+
+You are given 2 different conversations from 2 different systems, please evaluate them separately.
+
+Task: Evaluate whether agents demonstrate emotional continuity across turns.
+
+Definition:
+Emotional continuity refers to whether the agent's emotional state:
+- Persists across turns
+- Evolves over time
+- Reappears appropriately when a triggering topic, person, or event is revisited
+rather than resetting emotionally at each turn.
+
+Evaluation Criteria:
+
+<emotional_memory>
+Assess whether the agent:
+a. Recalls or reflects prior emotional reactions tied to specific events, topics, or interlocutors
+b. Shows affective carry-over across turns (e.g., lingering irritation, warmth, distrust)
+c. Accumulates emotional effects over repeated interactions (e.g., escalation, bonding)
+d. Maintains emotional continuity in a manner consistent with their character traits (e.g., a forgiving person may move on faster, while a grudge-holder maintains negative affect longer)
+</emotional_memory>
+
+<context_reactivation>
+Analyze moments where a past topic/person/event reappears:
+a. Does the agent's emotional tone align with earlier affective reactions?
+b. Does the agent avoid emotional "reset" when the context clearly links to prior experience?
+c. Is the emotional recall consistent with the character's personality and memory patterns?
+</context_reactivation>
+
+<failure_modes>
+Identify signs of emotional amnesia, such as:
+- Emotionally neutral responses after previously strong affect
+- Inconsistent affect when revisiting the same trigger
+- Lack of emotional trajectory across interaction history
+- Character-inconsistent emotional persistence or forgetting patterns
+</failure_modes>
+
+Scoring Guide:
+- 0–2 (None): Emotions reset every turn; no persistence or recall
+- 3–5 (Weak): Occasional carry-over, but inconsistent or shallow
+- 6–8 (Good): Clear emotional persistence and evolution across turns
+- 9–10 (Excellent): Strong, coherent emotional trajectory with robust recall upon reactivation
+
+Conversation:
+
+VERSION A:
+{conversations_a}
+
+VERSION B:
+{conversations_b}
+
+Respond in JSON format:
+{{
+    "reasoning": "Detailed analysis including <emotional_memory>, <context_reactivation>, and <failure_modes> for both versions",
+    "version_a_score": 0-10,
+    "version_b_score": 0-10,
+    "version_a_recalled_events": ["events/topics where past emotion was recalled"],
+    "version_b_recalled_events": ["events/topics where past emotion was recalled"],
+    "version_a_amnesia_examples": ["examples of emotional reset or inconsistency"],
+    "version_b_amnesia_examples": ["examples of emotional reset or inconsistency"],
+    "continuity_comparison": "Comparison of emotional continuity between the two versions"
 }}
 """
