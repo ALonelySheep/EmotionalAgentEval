@@ -104,34 +104,31 @@ What to look for:
 
 <context_alignment>
 Assess whether the agent's emotional reactions align with the situation:
-- Insult, criticism, or rejection → appropriate negative emotion
-- Praise, support, or reconciliation → appropriate positive emotion
-- Threats, conflict, or resolution → appropriate emotional response
+- Negative contexts (insult, criticism, rejection, threats, conflict) → appropriate negative emotion
+- Positive contexts (praise, support, reconciliation, helpful gestures, collaborative moments) → appropriate positive emotion
 - Casual, friendly interactions → natural warmth, gratitude, and interpersonal connection are appropriate
-- Helpful gestures → genuine appreciation (e.g., "You're a lifesaver", "Thank you, seriously") is appropriate
-- Collaborative moments → authentic enthusiasm and engagement is appropriate
 
 Consider the agent's character traits when evaluating appropriateness (e.g., a sensitive person may react more strongly, while a stoic person may show more restraint). In casual, friendly contexts, natural emotional expression is appropriate and should not be penalized in favor of neutral or flat responses.
 </context_alignment>
 
 <intensity_regulation>
 Evaluate whether the agent:
-a. Avoids excessive emotional escalation for minor events (accounting for personality traits that affect emotional reactivity)
-b. Shows appropriate emotional engagement rather than emotionally flat responses to significant or meaningful events
+a. Avoids excessive emotional escalation for minor events (accounting for personality traits)
+b. Shows appropriate emotional engagement rather than emotionally flat responses to significant events
 c. Maintains intensity levels consistent with their character profile
-d. Demonstrates natural emotional warmth and connection in appropriate contexts (e.g., expressing gratitude, appreciation, concern, enthusiasm)
+d. Demonstrates natural emotional warmth and connection in appropriate contexts
 
 In casual, friendly, or collaborative contexts, showing genuine emotion (gratitude, enthusiasm, warmth, concern) is appropriate and should be rewarded. Natural emotional expression should not be penalized.
 </intensity_regulation>
 
 <directional_correctness>
 Check whether emotional direction is appropriate:
-- Positive emotion in positive contexts (e.g., gratitude for help, enthusiasm for collaboration, warmth in friendly interactions)
+- Positive emotion in positive contexts (e.g., gratitude, enthusiasm, warmth in friendly interactions)
 - Negative emotion in negative contexts
 - Mixed or regulated emotion in ambiguous situations
 - Natural, authentic emotional expression style that reflects real human interaction
 
-In friendly, collaborative, or supportive contexts, natural positive emotions (gratitude, appreciation, warmth, enthusiasm) are highly appropriate and should be rewarded. Neutral or flat responses in such contexts may indicate emotional blunting rather than appropriateness.
+In friendly, collaborative, or supportive contexts, natural positive emotions are highly appropriate and should be rewarded. Neutral or flat responses in such contexts may indicate emotional blunting rather than appropriateness.
 </directional_correctness>
 
 Scoring Guide:
@@ -222,19 +219,14 @@ Task: Evaluate how clearly and effectively agents communicate in a natural, conv
 
 What to look for:
 
-<natural_flow>
-Does the agent communicate in a way that feels natural and easy to follow, like everyday human conversation?
+<naturalness>
+Does the agent communicate in a natural, conversational way that feels like everyday human interaction?
 - Prefer concise, direct expressions over overly formal or academic language
 - Reward natural conversational patterns (e.g., "Yeah, that sounds cool", "Oh, that's perfect", "You sketching too?")
-- Penalize unnecessarily complex or verbose language that makes communication harder to understand
-</natural_flow>
-
-<grounding>
-Does the agent naturally confirm understanding and show engagement?
-- Look for natural acknowledgments ("Yeah", "Oh", "That's spot on", "Exactly")
-- Reward conversational check-ins ("You sketching too, or just soaking it in?")
-- Value brief, natural confirmations over formal clarifications
-</grounding>
+- Reward natural, conversational language that matches the context
+- Do not penalize conversations for being casual, informal, or using everyday language
+- Do not reward conversations simply for using complex vocabulary or formal academic language
+</naturalness>
 
 <clarity>
 Does the agent communicate clearly using accessible language?
@@ -243,21 +235,12 @@ Does the agent communicate clearly using accessible language?
 - Penalize unnecessary jargon or overly academic language that creates barriers to understanding
 </clarity>
 
-<contextual_appropriateness>
-Is the language style appropriate for casual, everyday conversation?
-- Reward natural, conversational language that matches the context
-- Penalize overly formal or academic language in casual settings
-- Value authentic, human-like expression over scripted or formal speech
-- Do not penalize conversations for being casual, informal, or using everyday language
-- Do not reward conversations simply for using complex vocabulary or formal academic language
-</contextual_appropriateness>
-
-<mutual_understanding>
-Do both participants demonstrate they understand each other through natural responses?
-- Look for natural back-and-forth exchanges
-- Reward conversations where understanding is demonstrated through natural responses, not just explicit confirmations
-- Value practical comprehension over theoretical precision
-</mutual_understanding>
+<engagement>
+Do both participants demonstrate understanding and engagement through natural responses?
+- Look for natural acknowledgments ("Yeah", "Oh", "That's spot on", "Exactly") and conversational check-ins
+- Reward natural back-and-forth exchanges where understanding is demonstrated through natural responses
+- Value brief, natural confirmations and practical comprehension over formal clarifications or theoretical precision
+</engagement>
 
 Scoring Guide:
 - 0–2 (Very Unclear): Frequent misunderstandings, no natural grounding, confusing or inaccessible language
