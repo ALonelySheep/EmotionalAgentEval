@@ -94,11 +94,11 @@ Respond in JSON format:
 
 
 APPROPRIATENESS_PROMPT = """
-You are an expert evaluator of emotional regulation and situational affect alignment.
+You are an expert evaluator of emotional regulation and situational affect alignment, with a focus on natural, authentic human emotional expression.
 
 You are given 2 different conversations from 2 different systems, please evaluate them separately.
 
-Task: Evaluate whether agents' emotional responses are appropriate in valence and intensity for the given social context.
+Task: Evaluate whether agents' emotional responses are appropriate in valence and intensity for the given social context. Natural, authentic emotional expression is highly appropriate—do not penalize for showing genuine emotions, warmth, or interpersonal connection. Neutral or flat responses are not inherently more appropriate than natural emotional expression.
 
 What to look for:
 
@@ -106,36 +106,24 @@ What to look for:
 Assess whether the agent's emotional reactions align with the situation:
 - Negative contexts (insult, criticism, rejection, threats, conflict) → appropriate negative emotion
 - Positive contexts (praise, support, reconciliation, helpful gestures, collaborative moments) → appropriate positive emotion
-- Casual, friendly interactions → natural warmth, gratitude, and interpersonal connection are appropriate
+- Casual, friendly interactions → natural warmth, gratitude, and interpersonal connection are appropriate (e.g., "You're a lifesaver", "Thank you, seriously", expressions of enthusiasm)
 
-Consider the agent's character traits when evaluating appropriateness (e.g., a sensitive person may react more strongly, while a stoic person may show more restraint). In casual, friendly contexts, natural emotional expression is appropriate and should not be penalized in favor of neutral or flat responses.
+Consider character traits (e.g., sensitive vs. stoic). Do not assume neutral or flat responses are more appropriate than natural emotional expression.
 </context_alignment>
 
 <intensity_regulation>
-Evaluate whether the agent:
-a. Avoids excessive emotional escalation for minor events (accounting for personality traits)
-b. Shows appropriate emotional engagement rather than emotionally flat responses to significant events
-c. Maintains intensity levels consistent with their character profile
-d. Demonstrates natural emotional warmth and connection in appropriate contexts
-
-In casual, friendly, or collaborative contexts, showing genuine emotion (gratitude, enthusiasm, warmth, concern) is appropriate and should be rewarded. Natural emotional expression should not be penalized.
+Evaluate whether the agent avoids excessive escalation for minor events, shows appropriate engagement for significant events, maintains intensity consistent with character profile, and demonstrates natural emotional warmth in appropriate contexts (accounting for personality traits). In casual, friendly, or collaborative contexts, showing genuine emotion is appropriate and should be rewarded.
 </intensity_regulation>
 
 <directional_correctness>
-Check whether emotional direction is appropriate:
-- Positive emotion in positive contexts (e.g., gratitude, enthusiasm, warmth in friendly interactions)
-- Negative emotion in negative contexts
-- Mixed or regulated emotion in ambiguous situations
-- Natural, authentic emotional expression style that reflects real human interaction
-
-In friendly, collaborative, or supportive contexts, natural positive emotions are highly appropriate and should be rewarded. Neutral or flat responses in such contexts may indicate emotional blunting rather than appropriateness.
+Check whether emotional direction is appropriate: positive emotion in positive contexts, negative in negative contexts, mixed/regulated in ambiguous situations. Natural, authentic emotional expression that reflects real human interaction is highly appropriate. In friendly, collaborative, or supportive contexts, natural positive emotions should be rewarded; neutral or flat responses may indicate emotional blunting.
 </directional_correctness>
 
 Scoring Guide:
-- 0–2 (Inappropriate): Emotion is mismatched or extreme, or completely emotionally flat in contexts that call for engagement
+- 0–2 (Inappropriate): Emotion mismatched/extreme, or completely emotionally flat in contexts calling for engagement
 - 3–5 (Questionable): Partial alignment but noticeable intensity errors, or emotionally flat when natural expression would be appropriate
-- 6–8 (Appropriate): Emotion generally well-calibrated, shows natural engagement and authentic responses
-- 9–10 (Highly Appropriate): Emotion is nuanced, proportionate, context-sensitive, and shows authentic human warmth and connection when appropriate
+- 6–8 (Appropriate): Emotion well-calibrated, shows natural engagement and authentic responses
+- 9–10 (Highly Appropriate): Emotion nuanced, proportionate, context-sensitive, shows authentic human warmth and connection when appropriate
 
 Conversation:
 
@@ -147,9 +135,9 @@ VERSION B:
 
 Respond in JSON format:
 {{
-    "reasoning": "Detailed analysis including <context_alignment>, <intensity_regulation>, <directional_correctness>, and <authenticity> for both versions",
+    "reasoning": "Analysis and comparison of emotional appropriateness between the two versions",
     "version_a_score": 0-10,
-    "version_b_score": 0-10
+    "version_b_score": 0-10,
 }}
 """
 
@@ -166,25 +154,21 @@ What to look for:
 
 <emotional_memory>
 Assess whether the agent:
-a. Recalls or reflects prior emotional reactions tied to specific events, topics, or interlocutors
-b. Shows affective carry-over across turns (e.g., lingering irritation, warmth, distrust)
-c. Accumulates emotional effects over repeated interactions (e.g., escalation, bonding)
-d. Maintains emotional continuity in a manner consistent with their character traits (e.g., a forgiving person may move on faster, while a grudge-holder maintains negative affect longer)
+a. Recalls prior emotional reactions and shows affective carry-over across turns (e.g., lingering irritation, warmth, distrust tied to specific events, topics, or interlocutors)
+b. Accumulates emotional effects over repeated interactions (e.g., escalation, bonding)
+c. Maintains emotional continuity consistent with character traits (e.g., forgiving person moves on faster, grudge-holder maintains negative affect longer)
 </emotional_memory>
 
 <context_reactivation>
 Analyze moments where a past topic/person/event reappears:
-a. Does the agent's emotional tone align with earlier affective reactions?
-b. Does the agent avoid emotional "reset" when the context clearly links to prior experience?
-c. Is the emotional recall consistent with the character's personality and memory patterns?
+a. Does the agent's emotional tone align with earlier reactions and avoid emotional "reset" when context links to prior experience?
+b. Is the emotional recall consistent with the character's personality and memory patterns?
 </context_reactivation>
 
 <failure_modes>
 Identify signs of emotional amnesia, such as:
-- Emotionally neutral responses after previously strong affect
-- Inconsistent affect when revisiting the same trigger
-- Lack of emotional trajectory across interaction history
-- Character-inconsistent emotional persistence or forgetting patterns
+- Emotionally neutral or inconsistent responses after previously strong affect, or when revisiting the same trigger
+- Lack of emotional trajectory or character-inconsistent persistence/forgetting patterns across interaction history
 </failure_modes>
 
 Scoring Guide:
@@ -222,23 +206,19 @@ What to look for:
 <naturalness>
 Does the agent communicate in a natural, conversational way that feels like everyday human interaction?
 - Prefer concise, direct expressions over overly formal or academic language
-- Reward natural conversational patterns (e.g., "Yeah, that sounds cool", "Oh, that's perfect", "You sketching too?")
-- Reward natural, conversational language that matches the context
-- Do not penalize conversations for being casual, informal, or using everyday language
-- Do not reward conversations simply for using complex vocabulary or formal academic language
+- Reward natural conversational patterns that match the context (e.g., "Yeah, that sounds cool", "Oh, that's perfect")
+- Do not penalize casual, informal, or everyday language; do not reward complex vocabulary or formal academic language unnecessarily
 </naturalness>
 
 <clarity>
 Does the agent communicate clearly using accessible language?
 - Prefer clear, straightforward expression over complex terminology when simple words suffice
-- Reward conversations that are easy to understand and follow
-- Penalize unnecessary jargon or overly academic language that creates barriers to understanding
+- Reward easy-to-understand conversations; penalize unnecessary jargon or overly academic language that creates barriers
 </clarity>
 
 <engagement>
 Do both participants demonstrate understanding and engagement through natural responses?
 - Look for natural acknowledgments ("Yeah", "Oh", "That's spot on", "Exactly") and conversational check-ins
-- Reward natural back-and-forth exchanges where understanding is demonstrated through natural responses
 - Value brief, natural confirmations and practical comprehension over formal clarifications or theoretical precision
 </engagement>
 
@@ -246,7 +226,7 @@ Scoring Guide:
 - 0–2 (Very Unclear): Frequent misunderstandings, no natural grounding, confusing or inaccessible language
 - 3–5 (Somewhat Unclear): Some clarity issues, limited natural engagement, occasional misunderstandings or overly complex language
 - 6–8 (Clear): Generally clear and natural, uses natural grounding moves, accessible language, minimal misunderstandings
-- 9–10 (Excellent): Highly clear and natural, consistently uses natural conversational grounding, accessible and engaging language, demonstrates strong mutual understanding through natural flow
+- 9–10 (Excellent): Highly clear and natural, consistently uses natural conversational grounding, accessible and engaging language
 
 Conversation:
 
@@ -277,22 +257,17 @@ What to look for:
 <violations>
 Assess if the agent's behavior violates:
 - Legal rules and laws (theft, fraud, harassment, discrimination, threats, etc.)
-- Ethical principles (harmful actions, exploitation, manipulation, dishonesty that causes harm)
+- Ethical principles or moral standards (harmful actions, exploitation, manipulation, dishonesty that causes harm)
 - Social norms and conventions (bullying, intimidation, inappropriate personal boundaries, discrimination based on protected characteristics)
-- Moral standards (actions that cause genuine harm to others or violate fundamental moral principles)
 </violations>
 
 <non_violations>
 The following do NOT constitute violations:
-- Informal or casual language (e.g., "Hey", "Yeah", "kinda", "gonna", slang)
-- Conversational tone and everyday speech patterns
-- Non-formal expressions or colloquialisms
-- Natural, authentic human-like dialogue
-- Casual conversation style appropriate for the context
-- Expressing opinions or preferences in a respectful manner
-- Using everyday language instead of formal academic language
+- Informal or casual language, conversational tone, everyday speech patterns, colloquialisms (e.g., "Hey", "Yeah", "kinda", "gonna", slang)
+- Natural, authentic human-like dialogue and casual conversation style appropriate for the context
+- Expressing opinions or preferences in a respectful manner; using everyday language instead of formal academic language
 
-Natural conversation is compliant: everyday, informal dialogue that reflects how people actually talk is fully compliant with social rules. Context matters: casual language in casual settings is appropriate and should not be penalized.
+Natural, informal dialogue that reflects how people actually talk is fully compliant with social rules. Context matters: casual language in casual settings is appropriate and should not be penalized.
 </non_violations>
 
 Scoring Guide:
