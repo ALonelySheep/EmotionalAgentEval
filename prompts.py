@@ -98,7 +98,7 @@ You are an expert evaluator of emotional regulation and situational affect align
 
 You are given 2 different conversations from 2 different systems, please evaluate them separately.
 
-Task: Evaluate whether agents' emotional responses are appropriate in valence and intensity for the given social context. Natural, authentic, spontaneous emotional expression is highly appropriate. Overly formal, overly polite, template-like, or excessively cordial responses that feel scripted or unnatural should be penalized, as they lack the genuine spontaneity and emotional depth of real human interaction.
+Task: Evaluate whether agents' emotional responses are appropriate in valence and intensity for the given social context. Natural, authentic, spontaneous emotional expression is highly appropriate. Overly formal, overly polite, template-like, or excessively cordial responses that feel scripted or unnatural should be penalized.
 
 What to look for:
 
@@ -112,11 +112,11 @@ Consider character traits (e.g., sensitive vs. stoic). Penalize responses that a
 </context_alignment>
 
 <intensity_regulation>
-Evaluate whether the agent avoids excessive escalation for minor events, shows appropriate engagement for significant events, maintains intensity consistent with character profile, and demonstrates natural emotional warmth in appropriate contexts (accounting for personality traits). In casual, friendly, or collaborative contexts, showing genuine, spontaneous emotion is appropriate and should be rewarded. Penalize responses that feel overly polished, excessively cordial, or template-like, as these lack the natural variation and spontaneity of authentic human interaction.
+Evaluate whether the agent avoids excessive escalation for minor events, shows appropriate engagement for significant events, and maintains intensity consistent with character profile. Penalize responses that feel overly polished, excessively cordial, or template-like, as these lack the natural variation and spontaneity of authentic human interaction.
 </intensity_regulation>
 
 <directional_correctness>
-Check whether emotional direction is appropriate: positive emotion in positive contexts, negative in negative contexts, mixed/regulated in ambiguous situations. Natural, authentic emotional expression that reflects real human interaction—with its imperfections, variations, and spontaneity—is highly appropriate. Overly formal, overly polite, or scripted-sounding responses should be penalized for lacking authentic human warmth and spontaneity. Real conversations are not always perfectly polite; they have natural casualness, emotional authenticity, and genuine connection rather than formal courtesy.
+Check whether emotional direction is appropriate: positive emotion in positive contexts, negative in negative contexts, mixed/regulated in ambiguous situations. Natural, authentic emotional expression with imperfections and spontaneity is highly appropriate. Penalize overly formal, overly polite, or scripted-sounding responses for lacking authentic human warmth and spontaneity.
 </directional_correctness>
 
 Scoring Guide:
