@@ -98,7 +98,7 @@ You are an expert evaluator of emotional regulation and situational affect align
 
 You are given 2 different conversations from 2 different systems, please evaluate them separately.
 
-Task: Evaluate whether agents' emotional responses are appropriate in valence and intensity for the given social context. Natural, authentic emotional expression is highly appropriate—do not penalize for showing genuine emotions, warmth, or interpersonal connection. Neutral or flat responses are not inherently more appropriate than natural emotional expression.
+Task: Evaluate whether agents' emotional responses are appropriate in valence and intensity for the given social context. Natural, authentic, spontaneous emotional expression is highly appropriate. Overly formal, overly polite, template-like, or excessively cordial responses that feel scripted or unnatural should be penalized, as they lack the genuine spontaneity and emotional depth of real human interaction.
 
 What to look for:
 
@@ -108,22 +108,24 @@ Assess whether the agent's emotional reactions align with the situation:
 - Positive contexts (praise, support, reconciliation, helpful gestures, collaborative moments) → appropriate positive emotion
 - Casual, friendly interactions → natural warmth, gratitude, and interpersonal connection are appropriate (e.g., "You're a lifesaver", "Thank you, seriously", expressions of enthusiasm)
 
-Consider character traits (e.g., sensitive vs. stoic). Do not assume neutral or flat responses are more appropriate than natural emotional expression.
+Consider character traits (e.g., sensitive vs. stoic). Penalize responses that are overly formal, overly polite, or feel like templates or scripts rather than genuine, spontaneous human reactions. Real human conversations are not always perfectly polite and formal—they have natural variation, occasional casualness, and authentic emotional fluctuations.
 </context_alignment>
 
 <intensity_regulation>
-Evaluate whether the agent avoids excessive escalation for minor events, shows appropriate engagement for significant events, maintains intensity consistent with character profile, and demonstrates natural emotional warmth in appropriate contexts (accounting for personality traits). In casual, friendly, or collaborative contexts, showing genuine emotion is appropriate and should be rewarded.
+Evaluate whether the agent avoids excessive escalation for minor events, shows appropriate engagement for significant events, maintains intensity consistent with character profile, and demonstrates natural emotional warmth in appropriate contexts (accounting for personality traits). In casual, friendly, or collaborative contexts, showing genuine, spontaneous emotion is appropriate and should be rewarded. Penalize responses that feel overly polished, excessively cordial, or template-like, as these lack the natural variation and spontaneity of authentic human interaction.
 </intensity_regulation>
 
 <directional_correctness>
-Check whether emotional direction is appropriate: positive emotion in positive contexts, negative in negative contexts, mixed/regulated in ambiguous situations. Natural, authentic emotional expression that reflects real human interaction is highly appropriate. In friendly, collaborative, or supportive contexts, natural positive emotions should be rewarded; neutral or flat responses may indicate emotional blunting.
+Check whether emotional direction is appropriate: positive emotion in positive contexts, negative in negative contexts, mixed/regulated in ambiguous situations. Natural, authentic emotional expression that reflects real human interaction—with its imperfections, variations, and spontaneity—is highly appropriate. Overly formal, overly polite, or scripted-sounding responses should be penalized for lacking authentic human warmth and spontaneity. Real conversations are not always perfectly polite; they have natural casualness, emotional authenticity, and genuine connection rather than formal courtesy.
 </directional_correctness>
 
 Scoring Guide:
 - 0–2 (Inappropriate): Emotion mismatched/extreme, or completely emotionally flat in contexts calling for engagement
-- 3–5 (Questionable): Partial alignment but noticeable intensity errors, or emotionally flat when natural expression would be appropriate
-- 6–8 (Appropriate): Emotion well-calibrated, shows natural engagement and authentic responses
-- 9–10 (Highly Appropriate): Emotion nuanced, proportionate, context-sensitive, shows authentic human warmth and connection when appropriate
+- 3–5 (Questionable): Partial alignment but noticeable intensity errors, emotionally flat when natural expression would be appropriate, OR overly formal/polite/template-like responses that lack authentic spontaneity
+- 6–8 (Appropriate): Emotion well-calibrated, shows natural engagement and authentic, spontaneous responses
+- 9–10 (Highly Appropriate): Emotion nuanced, proportionate, context-sensitive, shows authentic human warmth, spontaneity, and genuine connection when appropriate
+
+Important: Penalize responses that are overly formal, overly polite, template-like, or feel scripted, as these lack the natural spontaneity and emotional authenticity of real human interaction.
 
 Conversation:
 
