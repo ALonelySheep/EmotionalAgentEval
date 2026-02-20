@@ -8,11 +8,12 @@ conversation quality across different systems (baseline vs. improved).
 import os
 import json
 import re
+import requests
 from pathlib import Path
 from datetime import datetime
 from typing import Dict, List, Tuple, Optional
 from dotenv import load_dotenv
-import boto3
+from openai import OpenAI
 import matplotlib.pyplot as plt
 import csv
 import prompts
@@ -35,12 +36,14 @@ class LLMEvaluator:
 
         Args:
             config_path: Path to config.json with LLM settings
-            env_path: Path to .env file with AWS credentials
+            env_path: Path to .env file with API credentials
         """
         self.config = self._load_config(config_path)
         self.env_path = env_path
         self._load_environment()
-        self.client = self._create_bedrock_client()
+        self.provider = self.config.get("provider", "azure_openai")
+        if self.provider != "bedrock":
+            self.client = self._create_azure_openai_client()
         self._load_prompt_templates()
 
     def _load_config(self, config_path: str) -> Dict:
@@ -52,18 +55,43 @@ class LLMEvaluator:
     def _load_environment(self):
         """Load environment variables from .env file."""
         load_dotenv(self.env_path, override=True)
-        api_key = os.getenv("AWS_BEARER_TOKEN_BEDROCK")
-        if not api_key:
-            raise ValueError(
-                "AWS_BEARER_TOKEN_BEDROCK environment variable not set.\n"
-                "Please create a .env file with your AWS Bedrock token."
-            )
+        provider = self.config.get("provider", "azure_openai")
+        if provider == "bedrock":
+            self.api_key = os.getenv("AWS_BEARER_TOKEN_BEDROCK")
+            if not self.api_key:
+                raise ValueError("AWS_BEARER_TOKEN_BEDROCK not set in .env file.")
+        else:
+            self.api_key = os.getenv("OPENAI_API_KEY")
+            if not self.api_key:
+                raise ValueError("OPENAI_API_KEY not set in .env file.")
 
-    def _create_bedrock_client(self):
-        """Create and return a Bedrock runtime client."""
+    def _create_azure_openai_client(self):
+        """Create and return an OpenAI-compatible client."""
+        endpoint = self.config.get(
+            "endpoint",
+            "https://95879-mij7ra9l-swedencentral.services.ai.azure.com/openai/v1/",
+        )
+        return OpenAI(base_url=endpoint, api_key=self.api_key)
+
+    def _call_bedrock(self, prompt: str, temperature: float, max_tokens: int) -> str:
+        """Call AWS Bedrock InvokeModel API with bearer token auth."""
+        model_id = self.config.get("deployment_name", "us.anthropic.claude-3-5-sonnet-20241022-v2:0")
         region = self.config.get("region", "us-east-1")
-        client = boto3.client(service_name="bedrock-runtime", region_name=region)
-        return client
+        url = f"https://bedrock-runtime.{region}.amazonaws.com/model/{model_id}/invoke"
+        payload = {
+            "anthropic_version": "bedrock-2023-05-31",
+            "messages": [{"role": "user", "content": prompt}],
+            "max_tokens": max_tokens,
+            "temperature": temperature,
+        }
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
+        resp = requests.post(url, headers=headers, json=payload, timeout=120)
+        resp.raise_for_status()
+        data = resp.json()
+        return data["content"][0]["text"]
 
     def _load_prompt_templates(self):
         """Load all prompt templates from prompts module."""
@@ -187,7 +215,7 @@ class LLMEvaluator:
         self, prompt: str, temperature: float = 0.7, max_tokens: int = 2000
     ) -> str:
         """
-        Make a completion call to Bedrock Claude API.
+        Make a completion call to Azure OpenAI API.
 
         Args:
             prompt: The evaluation prompt with conversation pairs
@@ -197,34 +225,21 @@ class LLMEvaluator:
         Returns:
             The LLM response text
         """
-        model_id = self.config.get(
-            "model_id", "us.anthropic.claude-sonnet-4-5-20250929-v1:0"
-        )
+        if self.provider == "bedrock":
+            return self._call_bedrock(prompt, temperature, max_tokens)
 
-        # Prepare the request body for Claude via Bedrock
-        body = {
-            "anthropic_version": "bedrock-2023-05-31",
-            "max_tokens": max_tokens,
-            "messages": [{"role": "user", "content": prompt}],
-            "temperature": temperature,
-        }
+        deployment_name = self.config.get("deployment_name", "DeepSeek-V3.2")
 
         # Make the API call
-        response = self.client.invoke_model(
-            modelId=model_id,
-            body=json.dumps(body),
-            contentType="application/json",
-            accept="application/json",
+        response = self.client.chat.completions.create(
+            model=deployment_name,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=temperature,
+            max_completion_tokens=max_tokens,
         )
 
-        # Parse the response
-        response_body = json.loads(response["body"].read())
-
-        # Extract text from response content blocks
-        response_text = ""
-        for block in response_body.get("content", []):
-            if block.get("type") == "text":
-                response_text += block.get("text", "")
+        # Extract text from response
+        response_text = response.choices[0].message.content
 
         return response_text
 
@@ -246,7 +261,20 @@ class LLMEvaluator:
             except json.JSONDecodeError:
                 pass
 
-        # If parsing fails, return raw response
+        # Fallback: directly extract score fields with regex (robust against
+        # malformed JSON where LLM puts literal newlines inside string values)
+        result = {}
+        score_a = re.search(r'"version_a_score"\s*:\s*(-?\d+(?:\.\d+)?)', response_text)
+        score_b = re.search(r'"version_b_score"\s*:\s*(-?\d+(?:\.\d+)?)', response_text)
+        if score_a:
+            v = float(score_a.group(1))
+            result["version_a_score"] = int(v) if v == int(v) else v
+        if score_b:
+            v = float(score_b.group(1))
+            result["version_b_score"] = int(v) if v == int(v) else v
+        if result:
+            return result
+
         return {"raw_response": response_text, "parsing_error": True}
 
     def _format_conversation_text(self, conversation: Dict) -> str:
@@ -385,9 +413,9 @@ Conversation:
             "num_conversations_path2": len(conversations_b),
             "num_evaluations": num_pairs * len(dimensions),
             "llm_config": {
-                "provider": self.config.get("provider", "bedrock"),
-                "model_id": self.config.get("model_id", "unknown"),
-                "region": self.config.get("region", "us-east-1"),
+                "provider": self.config.get("provider", "azure_openai"),
+                "endpoint": self.config.get("endpoint", "unknown"),
+                "deployment_name": self.config.get("deployment_name", "unknown"),
             },
             "status": "in_progress",
         }
@@ -455,7 +483,7 @@ Conversation:
                 # Print scores for tracking
                 score_a = llm_response.get("version_a_score", "N/A")
                 score_b = llm_response.get("version_b_score", "N/A")
-                print(f"      ✓ Completed - Scores: Path1={score_a}, Path2={score_b}")
+                print(f"      OK - Scores: Path1={score_a}, Path2={score_b}")
 
         print()
         print("  All evaluations completed!")
